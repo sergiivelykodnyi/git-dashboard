@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mocha">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Git Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Mona+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Catppuccin Mocha ── */
+    [data-theme="mocha"] {
+      --base:    #1e1e2e;
+      --mantle:  #181825;
+      --crust:   #11111b;
+      --surface0: #313244;
+      --surface1: #45475a;
+      --surface2: #585b70;
+      --overlay0: #6c7086;
+      --overlay1: #7f849c;
+      --overlay2: #9399b2;
+      --subtext0: #a6adc8;
+      --subtext1: #bac2de;
+      --text:    #cdd6f4;
+      --lavender:#b4befe;
+      --blue:    #89b4fa;
+      --sapphire:#74c7ec;
+      --sky:     #89dceb;
+      --teal:    #94e2d5;
+      --green:   #a6e3a1;
+      --yellow:  #f9e2af;
+      --peach:   #fab387;
+      --maroon:  #eba0ac;
+      --red:     #f38ba8;
+      --mauve:   #cba6f7;
+      --pink:    #f5c2e7;
+      --flamingo:#f2cdcd;
+      --rosewater:#f5e0dc;
+    }
+
+    /* ── Catppuccin Latte ── */
+    [data-theme="latte"] {
+      --base:    #eff1f5;
+      --mantle:  #e6e9ef;
+      --crust:   #dce0e8;
+      --surface0: #ccd0da;
+      --surface1: #bcc0cc;
+      --surface2: #acb0be;
+      --overlay0: #9ca0b0;
+      --overlay1: #8c8fa1;
+      --overlay2: #7c7f93;
+      --subtext0: #6c6f85;
+      --subtext1: #5c5f77;
+      --text:    #4c4f69;
+      --lavender:#7287fd;
+      --blue:    #1e66f5;
+      --sapphire:#209fb5;
+      --sky:     #04a5e5;
+      --teal:    #179299;
+      --green:   #40a02b;
+      --yellow:  #df8e1d;
+      --peach:   #fe640b;
+      --maroon:  #e64553;
+      --red:     #d20f39;
+      --mauve:   #8839ef;
+      --pink:    #ea76cb;
+      --flamingo:#dd7878;
+      --rosewater:#dc8a78;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Mona Sans', sans-serif;
+      background: var(--base);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--mantle);
+      border-bottom: 1px solid var(--surface0);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--mauve);
+      letter-spacing: -0.3px;
+    }
+
+    .logo svg { width: 20px; height: 20px; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--surface1);
+      background: var(--surface0);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: var(--surface1); border-color: var(--surface2); }
+
+    .btn-primary {
+      background: var(--mauve);
+      border-color: var(--mauve);
+      color: var(--base);
+      font-weight: 600;
+    }
+    .btn-primary:hover { opacity: 0.85; background: var(--mauve); }
+
+    .btn-green  { background: var(--green);   border-color: var(--green);   color: var(--base); font-weight:600; }
+    .btn-blue   { background: var(--blue);    border-color: var(--blue);    color: var(--base); font-weight:600; }
+    .btn-peach  { background: var(--peach);   border-color: var(--peach);   color: var(--base); font-weight:600; }
+    .btn-green:hover  { opacity:0.85; background: var(--green);  }
+    .btn-blue:hover   { opacity:0.85; background: var(--blue);   }
+    .btn-peach:hover  { opacity:0.85; background: var(--peach);  }
+
+    .btn-icon {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--surface1);
+      background: transparent;
+      color: var(--subtext0);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items:center; justify-content:center;
+    }
+    .btn-icon:hover { background: var(--surface0); color: var(--text); }
+    .btn-icon.active { color: var(--mauve); border-color: var(--mauve); }
+
+    /* ── Layout ── */
+    .layout { display: flex; flex: 1; height: calc(100vh - 56px); overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--mantle);
+      border-right: 1px solid var(--surface0);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 16px 16px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--overlay1);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sidebar-actions { display: flex; gap: 4px; }
+
+    .repo-list { overflow-y: auto; flex: 1; padding: 4px 8px 12px; }
+
+    .repo-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .repo-item:hover { background: var(--surface0); }
+    .repo-item.active { background: var(--surface0); }
+    .repo-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 60%;
+      background: var(--mauve);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .repo-icon {
+      width: 28px; height: 28px;
+      background: var(--surface1);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--mauve);
+    }
+
+    .repo-info { flex: 1; min-width: 0; }
+
+    .repo-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-branch {
+      font-size: 11px;
+      color: var(--subtext0);
+      font-family: 'JetBrains Mono', monospace;
+      display: flex; align-items: center; gap: 4px;
+      margin-top: 1px;
+    }
+
+    .repo-badges { display: flex; gap: 3px; flex-shrink: 0; }
+
+    .badge {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-clean   { background: color-mix(in srgb, var(--green) 20%, transparent);  color: var(--green); }
+    .badge-changed { background: color-mix(in srgb, var(--yellow) 20%, transparent); color: var(--yellow); }
+    .badge-ahead   { background: color-mix(in srgb, var(--blue) 20%, transparent);   color: var(--blue); }
+    .badge-behind  { background: color-mix(in srgb, var(--peach) 20%, transparent);  color: var(--peach); }
+    .badge-error   { background: color-mix(in srgb, var(--red) 20%, transparent);    color: var(--red); }
+
+    /* ── Main content ── */
+    .main { flex: 1; overflow-y: auto; padding: 24px; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 12px;
+      color: var(--overlay0);
+      text-align: center;
+    }
+
+    .empty-state svg { opacity: 0.3; }
+    .empty-state h3 { font-size: 16px; font-weight: 500; color: var(--subtext0); }
+    .empty-state p  { font-size: 13px; max-width: 280px; line-height: 1.6; }
+
+    /* ── Repo detail ── */
+    .repo-detail { display: flex; flex-direction: column; gap: 20px; }
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .detail-title { display: flex; align-items: center; gap: 12px; }
+
+    .detail-icon {
+      width: 44px; height: 44px;
+      background: color-mix(in srgb, var(--mauve) 15%, transparent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--mauve);
+    }
+
+    .detail-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .detail-path {
+      font-size: 11px;
+      color: var(--overlay1);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+    }
+
+    .detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--mantle);
+      border: 1px solid var(--surface0);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--overlay1);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 14px;
+    }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    .stat-item {
+      background: var(--base);
+      border: 1px solid var(--surface0);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-label { font-size: 11px; color: var(--subtext0); margin-top: 2px; }
+
+    .stat-clean   .stat-value { color: var(--green); }
+    .stat-changed .stat-value { color: var(--yellow); }
+    .stat-ahead   .stat-value { color: var(--blue); }
+    .stat-behind  .stat-value { color: var(--peach); }
+
+    /* ── Last commit ── */
+    .commit-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--base);
+      border: 1px solid var(--surface0);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .commit-hash {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: color-mix(in srgb, var(--mauve) 15%, transparent);
+      color: var(--mauve);
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .commit-msg { font-size: 13px; font-weight: 500; color: var(--text); }
+
+    .commit-meta {
+      font-size: 11px;
+      color: var(--subtext0);
+      margin-top: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── File changes ── */
+    .file-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      background: var(--base);
+      border: 1px solid var(--surface0);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .file-status {
+      width: 18px; height: 18px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .fs-M { background: color-mix(in srgb, var(--yellow) 20%, transparent); color: var(--yellow); }
+    .fs-A { background: color-mix(in srgb, var(--green)  20%, transparent); color: var(--green);  }
+    .fs-D { background: color-mix(in srgb, var(--red)    20%, transparent); color: var(--red);    }
+    .fs-R { background: color-mix(in srgb, var(--blue)   20%, transparent); color: var(--blue);   }
+    .fs-? { background: color-mix(in srgb, var(--overlay0) 20%, transparent); color: var(--overlay0); }
+
+    .file-path { flex: 1; color: var(--subtext1); }
+
+    /* ── Commit form ── */
+    .commit-form { display: flex; gap: 8px; }
+
+    .commit-input {
+      flex: 1;
+      background: var(--base);
+      border: 1px solid var(--surface1);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: var(--text);
+      font-family: 'Mona Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .commit-input:focus { border-color: var(--mauve); }
+    .commit-input::placeholder { color: var(--overlay0); }
+
+    /* ── Log ── */
+    .log-output {
+      background: var(--crust);
+      border: 1px solid var(--surface0);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--subtext1);
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .log-entry { display: flex; gap: 10px; align-items: flex-start; }
+    .log-time  { color: var(--overlay0); flex-shrink: 0; }
+    .log-ok    { color: var(--green); }
+    .log-err   { color: var(--red); }
+    .log-info  { color: var(--blue); }
+
+    /* ── Toast ── */
+    .toast-container {
+      position: fixed;
+      bottom: 20px; right: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 999;
+    }
+
+    .toast {
+      background: var(--mantle);
+      border: 1px solid var(--surface1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideIn 0.2s ease;
+      max-width: 320px;
+    }
+
+    .toast.ok  { border-left: 3px solid var(--green); }
+    .toast.err { border-left: 3px solid var(--red);   }
+
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .modal {
+      background: var(--mantle);
+      border: 1px solid var(--surface1);
+      border-radius: 14px;
+      padding: 24px;
+      width: 480px;
+      max-width: 90vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+    .form-group { margin-bottom: 14px; }
+    .form-label { font-size: 12px; color: var(--subtext0); margin-bottom: 6px; display: block; font-family: 'JetBrains Mono', monospace; }
+
+    .form-input {
+      width: 100%;
+      background: var(--base);
+      border: 1px solid var(--surface1);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus { border-color: var(--mauve); }
+
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ── Loading spinner ── */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Refresh indicator ── */
+    .refresh-badge {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--overlay0);
+      padding: 2px 8px;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--surface2); }
+
+    .hidden { display: none !important; }
+
+    .divider {
+      height: 1px;
+      background: var(--surface0);
+      margin: 8px 0;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    @media (max-width: 700px) {
+      .sidebar { width: 220px; min-width: 220px; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+        <path d="M9 18c-4.51 2-5-2-7-2"/>
+      </svg>
+      git dashboard
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="refresh-badge" id="lastRefresh">–</span>
+    <button class="btn" id="refreshAll" onclick="loadRepos()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+        <path d="M8 16H3v5"/>
+      </svg>
+      Refresh all
+    </button>
+    <button class="btn btn-primary" onclick="showAddModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M5 12h14"/><path d="M12 5v14"/>
+      </svg>
+      Add repo
+    </button>
+    <button class="btn-icon" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="iconSun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+      <svg id="iconMoon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Repositories</span>
+      <div class="sidebar-actions">
+        <button class="btn-icon" onclick="loadRepos()" title="Refresh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="repo-list" id="repoList">
+      <div style="padding:20px;text-align:center;color:var(--overlay0);font-size:12px;">Loading…</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="mainContent">
+    <div class="empty-state">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+        <path d="M9 18c-4.51 2-5-2-7-2"/>
+      </svg>
+      <h3>No repository selected</h3>
+      <p>Select a repository from the sidebar, or add one to get started.</p>
+      <button class="btn btn-primary" onclick="showAddModal()">Add repository</button>
+    </div>
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- Add repo modal -->
+<div class="modal-overlay hidden" id="addModal">
+  <div class="modal">
+    <h3>Add Repository</h3>
+    <div class="form-group">
+      <label class="form-label">Repository path (absolute)</label>
+      <input class="form-input" id="addRepoPath" placeholder="/Users/you/projects/my-repo" />
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label class="form-label">Or scan a directory for git repos</label>
+      <input class="form-input" id="scanDir" placeholder="/Users/you/projects" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addRepo()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:3000/api';
+  let repos = [];
+  let activeRepo = null;
+  let logs = [];
+  let autoRefreshTimer = null;
+
+  // ── Theme ──
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.dataset.theme === 'mocha';
+    html.dataset.theme = isDark ? 'latte' : 'mocha';
+    document.getElementById('iconSun').classList.toggle('hidden', isDark);
+    document.getElementById('iconMoon').classList.toggle('hidden', !isDark);
+    localStorage.setItem('theme', html.dataset.theme);
+  }
+
+  (function initTheme() {
+    const saved = localStorage.getItem('theme') || 'mocha';
+    document.documentElement.dataset.theme = saved;
+    document.getElementById('iconSun').classList.toggle('hidden', saved === 'mocha');
+    document.getElementById('iconMoon').classList.toggle('hidden', saved === 'latte');
+  })();
+
+  // ── Toast ──
+  function toast(msg, type = 'ok') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<span>${type === 'ok' ? '✓' : '✗'}</span><span>${msg}</span>`;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  // ── Logging ──
+  function addLog(msg, type = 'info') {
+    logs.push({ msg, type, time: new Date().toLocaleTimeString() });
+    renderLog();
+  }
+
+  function renderLog() {
+    const el = document.getElementById('logOutput');
+    if (!el) return;
+    el.innerHTML = logs.slice(-50).map(l =>
+      `<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-${l.type}">${escHtml(l.msg)}</span></div>`
+    ).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+  }
+
+  // ── Load repos ──
+  async function loadRepos() {
+    const btn = document.getElementById('refreshAll');
+    btn.innerHTML = '<span class="spinner"></span> Refreshing…';
+    try {
+      const res = await fetch(`${API}/repos`);
+      repos = await res.json();
+      renderSidebar();
+      if (activeRepo) {
+        const updated = repos.find(r => r.path === activeRepo.path);
+        if (updated) renderDetail(updated);
+      }
+      document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    } catch(e) {
+      toast('Cannot connect to server. Is it running?', 'err');
+    }
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Refresh all`;
+  }
+
+  // ── Sidebar ──
+  function renderSidebar() {
+    const list = document.getElementById('repoList');
+    if (!repos.length) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--overlay0);font-size:12px;line-height:1.6">No repositories yet.<br>Click <strong>Add repo</strong> to get started.</div>`;
+      return;
+    }
+    list.innerHTML = repos.map(r => {
+      const isActive = activeRepo && activeRepo.path === r.path;
+      const badges = buildBadges(r);
+      return `
+        <div class="repo-item ${isActive ? 'active' : ''}" onclick="selectRepo('${escHtml(r.path)}')">
+          <div class="repo-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+              <path d="M9 18c-4.51 2-5-2-7-2"/>
+            </svg>
+          </div>
+          <div class="repo-info">
+            <div class="repo-name">${escHtml(r.name)}</div>
+            <div class="repo-branch">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+                <path d="M18 9a9 9 0 0 1-9 9"/>
+              </svg>
+              ${escHtml(r.branch || '?')}
+            </div>
+          </div>
+          <div class="repo-badges">${badges}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildBadges(r) {
+    if (r.error) return `<span class="badge badge-error">err</span>`;
+    let b = '';
+    if (r.isClean && !r.ahead && !r.behind) b += `<span class="badge badge-clean">✓</span>`;
+    if (r.changed)  b += `<span class="badge badge-changed">${r.changed}</span>`;
+    if (r.ahead)    b += `<span class="badge badge-ahead">↑${r.ahead}</span>`;
+    if (r.behind)   b += `<span class="badge badge-behind">↓${r.behind}</span>`;
+    return b;
+  }
+
+  // ── Select repo ──
+  function selectRepo(path) {
+    activeRepo = repos.find(r => r.path === path);
+    if (!activeRepo) return;
+    renderSidebar();
+    renderDetail(activeRepo);
+  }
+
+  // ── Detail view ──
+  function renderDetail(r) {
+    activeRepo = r;
+    const main = document.getElementById('mainContent');
+
+    const fileRows = (r.files || []).map(f => {
+      const s = (f.index !== ' ' && f.index !== '?' ? f.index : f.working_dir) || '?';
+      const cls = { M:'fs-M', A:'fs-A', D:'fs-D', R:'fs-R' }[s] || 'fs-?';
+      return `<div class="file-item">
+        <div class="file-status ${cls}">${s}</div>
+        <div class="file-path">${escHtml(f.path)}</div>
+      </div>`;
+    }).join('');
+
+    const lastCommitHtml = r.lastCommit ? `
+      <div class="commit-info">
+        <div class="commit-hash">${r.lastCommit.hash}</div>
+        <div>
+          <div class="commit-msg">${escHtml(r.lastCommit.message)}</div>
+          <div class="commit-meta">${escHtml(r.lastCommit.author)} · ${formatDate(r.lastCommit.date)}</div>
+        </div>
+      </div>` : `<div style="color:var(--overlay0);font-size:13px;">No commits yet</div>`;
+
+    main.innerHTML = `
+      <div class="repo-detail">
+        <div class="detail-header">
+          <div class="detail-title">
+            <div class="detail-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                <path d="M9 18c-4.51 2-5-2-7-2"/>
+              </svg>
+            </div>
+            <div>
+              <div class="detail-name">${escHtml(r.name)}</div>
+              <div class="detail-path">${escHtml(r.path)}</div>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <button class="btn btn-blue" onclick="gitAction('fetch')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Fetch
+            </button>
+            <button class="btn btn-green" onclick="gitAction('pull')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Pull
+            </button>
+            <button class="btn btn-peach" onclick="gitAction('push')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Push
+            </button>
+            <button class="btn" onclick="removeRepo('${escHtml(r.path)}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card">
+          <div class="card-title">Status</div>
+          <div class="stats-grid">
+            <div class="stat-item stat-clean">
+              <div class="stat-value">${r.isClean ? '✓' : '✗'}</div>
+              <div class="stat-label">Clean</div>
+            </div>
+            <div class="stat-item stat-changed">
+              <div class="stat-value">${r.changed}</div>
+              <div class="stat-label">Changed</div>
+            </div>
+            <div class="stat-item stat-ahead">
+              <div class="stat-value">${r.ahead}</div>
+              <div class="stat-label">Ahead</div>
+            </div>
+            <div class="stat-item stat-behind">
+              <div class="stat-value">${r.behind}</div>
+              <div class="stat-label">Behind</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two col: last commit + branch info -->
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Last Commit</div>
+            ${lastCommitHtml}
+          </div>
+          <div class="card">
+            <div class="card-title">Branch</div>
+            <div class="commit-info">
+              <div style="flex:1">
+                <div class="commit-msg" style="display:flex;align-items:center;gap:8px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--mauve)" stroke-width="2.5">
+                    <line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+                    <path d="M18 9a9 9 0 0 1-9 9"/>
+                  </svg>
+                  ${escHtml(r.branch || '?')}
+                </div>
+                <div class="commit-meta" style="margin-top:6px;">
+                  Tracking: ${escHtml(r.tracking || 'no remote tracking')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Changed files -->
+        ${r.files && r.files.length > 0 ? `
+        <div class="card">
+          <div class="card-title">Changed Files (${r.files.length})</div>
+          <div class="file-list">${fileRows}</div>
+        </div>` : ''}
+
+        <!-- Commit -->
+        <div class="card">
+          <div class="card-title">Commit Changes</div>
+          <div class="commit-form">
+            <input class="commit-input" id="commitMsg" placeholder="feat: describe your changes…" />
+            <button class="btn btn-primary" onclick="gitAction('commit')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/>
+              </svg>
+              Commit
+            </button>
+          </div>
+        </div>
+
+        <!-- Log -->
+        <div class="card">
+          <div class="card-title">Output Log</div>
+          <div class="log-output" id="logOutput"></div>
+        </div>
+      </div>`;
+
+    renderLog();
+  }
+
+  // ── Git actions ──
+  async function gitAction(action) {
+    if (!activeRepo) return;
+    let message = '';
+    if (action === 'commit') {
+      message = document.getElementById('commitMsg')?.value?.trim();
+      if (!message) { toast('Enter a commit message first', 'err'); return; }
+    }
+
+    addLog(`Running git ${action}…`, 'info');
+
+    try {
+      const res = await fetch(`${API}/repos/git`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: activeRepo.path, action, message })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        addLog(data.result, 'ok');
+        toast(data.result, 'ok');
+        if (action === 'commit') {
+          const inp = document.getElementById('commitMsg');
+          if (inp) inp.value = '';
+        }
+        if (data.status) {
+          // update repos array
+          const idx = repos.findIndex(r => r.path === activeRepo.path);
+          if (idx >= 0) repos[idx] = data.status;
+          renderDetail(data.status);
+          renderSidebar();
+        }
+      } else {
+        addLog(data.result, 'err');
+        toast(data.result, 'err');
+      }
+    } catch(e) {
+      addLog(e.message, 'err');
+      toast('Server error', 'err');
+    }
+  }
+
+  // ── Remove repo ──
+  async function removeRepo(path) {
+    await fetch(`${API}/repos`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    });
+    repos = repos.filter(r => r.path !== path);
+    activeRepo = null;
+    renderSidebar();
+    document.getElementById('mainContent').innerHTML = `
+      <div class="empty-state">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+          <path d="M9 18c-4.51 2-5-2-7-2"/>
+        </svg>
+        <h3>Repository removed</h3>
+        <p>Select another repository from the sidebar.</p>
+      </div>`;
+    toast('Repository removed');
+  }
+
+  // ── Add repo modal ──
+  function showAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+  function closeModal()   { document.getElementById('addModal').classList.add('hidden'); }
+
+  async function addRepo() {
+    const repoPath = document.getElementById('addRepoPath').value.trim();
+    const scanDir  = document.getElementById('scanDir').value.trim();
+
+    if (!repoPath && !scanDir) { toast('Enter a path', 'err'); return; }
+
+    if (repoPath) {
+      const res  = await fetch(`${API}/repos/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: repoPath })
+      });
+      const data = await res.json();
+      if (!data.ok) { toast(data.error, 'err'); return; }
+    }
+
+    if (scanDir) {
+      const config = await (await fetch(`${API}/config`)).json();
+      await fetch(`${API}/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...config, scanDir })
+      });
+    }
+
+    closeModal();
+    await loadRepos();
+    toast('Repository added', 'ok');
+  }
+
+  // Close modal on overlay click
+  document.getElementById('addModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // ── Helpers ──
+  function formatDate(d) {
+    if (!d) return '';
+    const date = new Date(d);
+    return isNaN(date) ? d : date.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  // ── Auto-refresh every 30s ──
+  function startAutoRefresh() {
+    autoRefreshTimer = setInterval(loadRepos, 30000);
+  }
+
+  // ── Init ──
+  loadRepos().then(startAutoRefresh);
+</script>
+</body>
+</html>
