@@ -53,16 +53,14 @@ function scanDirectory(dir) {
   const resolved = resolveRepoPath(dir);
   if (!resolved) return [];
   try {
-    return fs
-      .readdirSync(resolved)
-      .flatMap((name) => {
-        try {
-          const real = fs.realpathSync(path.join(resolved, name));
-          return fs.statSync(real).isDirectory() && isGitRepo(real) ? [real] : [];
-        } catch {
-          return [];
-        }
-      });
+    return fs.readdirSync(resolved).flatMap((name) => {
+      try {
+        const real = fs.realpathSync(path.join(resolved, name));
+        return fs.statSync(real).isDirectory() && isGitRepo(real) ? [real] : [];
+      } catch {
+        return [];
+      }
+    });
   } catch {
     return [];
   }
@@ -149,7 +147,8 @@ app.get("/api/repos/status", async (req, res) => {
   const { path: repoPath } = req.query;
   if (!repoPath) return res.status(400).json({ error: "path required" });
   const resolved = resolveRepoPath(repoPath);
-  if (!resolved) return res.status(400).json({ error: "Invalid or non-existent path" });
+  if (!resolved)
+    return res.status(400).json({ error: "Invalid or non-existent path" });
   const status = await getRepoStatus(resolved);
   res.json(status);
 });
@@ -160,8 +159,10 @@ app.post("/api/repos/git", async (req, res) => {
   if (!repoPath || !action)
     return res.status(400).json({ error: "path and action required" });
   const resolved = resolveRepoPath(repoPath);
-  if (!resolved) return res.status(400).json({ error: "Invalid or non-existent path" });
-  if (!isGitRepo(resolved)) return res.status(400).json({ error: "Not a git repository" });
+  if (!resolved)
+    return res.status(400).json({ error: "Invalid or non-existent path" });
+  if (!isGitRepo(resolved))
+    return res.status(400).json({ error: "Not a git repository" });
 
   try {
     const git = simpleGit(resolved);
@@ -207,7 +208,10 @@ app.post("/api/config", (req, res) => {
   const validatedPaths = Array.isArray(repoPaths)
     ? repoPaths.filter((p) => typeof p === "string")
     : [];
-  saveConfig({ repoPaths: validatedPaths, scanDir: typeof scanDir === "string" ? scanDir : "" });
+  saveConfig({
+    repoPaths: validatedPaths,
+    scanDir: typeof scanDir === "string" ? scanDir : "",
+  });
   res.json({ ok: true });
 });
 
@@ -216,14 +220,40 @@ app.post("/api/repos/add", (req, res) => {
   const { path: repoPath } = req.body;
   if (!repoPath) return res.status(400).json({ error: "path required" });
   const resolved = resolveRepoPath(repoPath);
-  if (!resolved) return res.status(400).json({ error: "Invalid or non-existent path" });
-  if (!isGitRepo(resolved)) return res.status(400).json({ error: "Not a git repository" });
+  if (!resolved)
+    return res.status(400).json({ error: "Invalid or non-existent path" });
+  if (!isGitRepo(resolved))
+    return res.status(400).json({ error: "Not a git repository" });
   const config = loadConfig();
   if (!config.repoPaths.includes(resolved)) {
     config.repoPaths.push(resolved);
     saveConfig(config);
   }
   res.json({ ok: true });
+});
+
+// POST fetch all repos
+app.post("/api/repos/fetch-all", async (req, res) => {
+  const config = loadConfig();
+  const paths = new Set([...config.repoPaths]);
+  if (config.scanDir) {
+    scanDirectory(config.scanDir).forEach((p) => paths.add(p));
+  }
+  const results = await Promise.all(
+    [...paths].map(async (repoPath) => {
+      try {
+        const git = simpleGit(repoPath);
+        const remotes = await git.getRemotes(true).catch(() => []);
+        if (remotes.length > 0) {
+          await git.fetch(["--all", "--prune"]);
+        }
+      } catch {
+        // ignore fetch errors; still return updated status
+      }
+      return getRepoStatus(repoPath);
+    }),
+  );
+  res.json(results);
 });
 
 // DELETE repo from list

@@ -10,7 +10,7 @@ Built with **Vite + React + TypeScript**. Styled with **Catppuccin** — Mocha (
 - ↑↓ Ahead / behind remote indicators
 - 📄 Changed files list with status (M / A / D / R)
 - 📦 Last commit info (hash, message, author, date)
-- ⚡ **Fetch**, **Pull**, **Push** per repo with one click
+- ⚡ **Fetch all** repos at once from the header, or **Fetch**, **Pull**, **Push** per repo with one click
 - ✏️ **Commit** changes with a message (stages everything + commits)
 - 🔄 Auto-refresh every 30 seconds
 - 🌙 Mocha (dark) / ☀️ Latte (light) theme toggle, persisted in localStorage
@@ -56,7 +56,7 @@ All git repositories inside will be auto-discovered.
 ## Project Structure
 
 ```
-├── server.js               # Express backend (git operations)
+├── server.cjs              # Express backend (git operations)
 ├── src/
 │   ├── api/index.ts        # Axios API layer
 │   ├── store/index.ts      # Zustand global store
@@ -83,7 +83,20 @@ All git repositories inside will be auto-discovered.
 ## Custom Port
 
 ```bash
-PORT=8080 node server.js
+PORT=8080 node server.cjs
 ```
 
-Repos and scan directory are saved in `config.json` next to `server.js`.
+Repos and scan directory are saved in `config.json` next to `server.cjs`.
+
+## 🤖 Built with Claude
+
+[![Built with Claude Chat](https://img.shields.io/badge/Built_with-Claude_Chat-D97757?style=flat-square&logo=claude&logoColor=white)](https://claude.ai) [![Built with Claude Code](https://img.shields.io/badge/Built_with-Claude_Code-D97757?style=flat-square&logo=claude&logoColor=white)](https://claude.ai/code) [![AI Assisted](https://img.shields.io/badge/AI_Assisted-Majority-8B6CF6?style=flat-square)](https://anthropic.com)
+
+This project was developed primarily using **Claude Chat** and **Claude Code** by Anthropic.
+The majority of the codebase was generated and iterated through AI-assisted development,
+with human review and editing throughout.
+
+**Tools used:**
+
+- [Claude Chat](https://claude.ai) — architecture decisions, code generation, debugging
+- [Claude Code](https://claude.ai/code) — agentic coding, refactoring, file management

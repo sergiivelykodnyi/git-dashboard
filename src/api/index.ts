@@ -16,6 +16,9 @@ export const runGitAction = (
 ): Promise<GitActionResult> =>
   api.post("/repos/git", { path, action, message }).then((r) => r.data);
 
+export const fetchAllRepos = (): Promise<Repo[]> =>
+  api.post("/repos/fetch-all").then((r) => r.data);
+
 export const addRepo = (
   path: string,
 ): Promise<{ ok: boolean; error?: string }> =>

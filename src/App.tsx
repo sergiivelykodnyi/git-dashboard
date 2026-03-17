@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import { BookMarked } from 'lucide-react';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
-import { RepoDetail } from './components/RepoDetail';
-import { AddRepoModal } from './components/AddRepoModal';
-import { ToastContainer } from './components/Toast';
-import { useRepos } from './hooks/useRepos';
-import { useAppStore } from './store';
+import { useState } from "react";
+import { BookMarked } from "lucide-react";
+import { Header } from "./components/Header";
+import { Sidebar } from "./components/Sidebar";
+import { RepoDetail } from "./components/RepoDetail";
+import { AddRepoModal } from "./components/AddRepoModal";
+import { ToastContainer } from "./components/Toast";
+import { useRepos } from "./hooks/useRepos";
+import { useAppStore } from "./store";
+import { fetchAllRepos } from "./api";
 
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const { refresh } = useRepos();
-  const { repos, activeRepoPath } = useAppStore();
+  const { repos, activeRepoPath, setRepos } = useAppStore();
 
   const activeRepo = repos.find((r) => r.path === activeRepoPath) ?? null;
 
@@ -22,20 +24,45 @@ function App() {
     setRefreshing(false);
   };
 
+  const handleFetchAll = async () => {
+    setFetching(true);
+    try {
+      const updated = await fetchAllRepos();
+      setRepos(updated);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   return (
     <>
-      <Header onRefresh={handleRefresh} refreshing={refreshing} onAddRepo={() => setShowModal(true)} />
+      <Header
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
+        onFetchAll={handleFetchAll}
+        fetching={fetching}
+        onAddRepo={() => setShowModal(true)}
+      />
       <div className="layout">
-        <Sidebar onRefresh={handleRefresh} />
+        <Sidebar />
         <main className="main">
           {activeRepo ? (
             <RepoDetail repo={activeRepo} />
           ) : (
             <div className="empty-state">
-              <BookMarked size={56} strokeWidth={1.2} style={{ opacity: 0.25 }} />
+              <BookMarked
+                size={56}
+                strokeWidth={1.2}
+                style={{ opacity: 0.25 }}
+              />
               <h3>No repository selected</h3>
-              <p>Select a repository from the sidebar, or add one to get started.</p>
-              <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+              <p>
+                Select a repository from the sidebar, or add one to get started.
+              </p>
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowModal(true)}
+              >
                 Add repository
               </button>
             </div>
@@ -44,7 +71,10 @@ function App() {
       </div>
 
       {showModal && (
-        <AddRepoModal onClose={() => setShowModal(false)} onAdded={handleRefresh} />
+        <AddRepoModal
+          onClose={() => setShowModal(false)}
+          onAdded={handleRefresh}
+        />
       )}
 
       <ToastContainer />
