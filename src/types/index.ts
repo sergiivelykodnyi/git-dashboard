@@ -42,4 +42,3 @@ export interface LogEntry {
   time: string;
 }
 
-export type Theme = 'mocha' | 'latte';

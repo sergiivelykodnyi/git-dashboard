@@ -1,11 +1,4 @@
-import {
-  RefreshCw,
-  Plus,
-  Sun,
-  Moon,
-  GitBranch,
-  CloudDownload,
-} from "lucide-react";
+import { RefreshCw, Plus, GitBranch, CloudDownload } from "lucide-react";
 import { useAppStore } from "../store";
 
 interface Props {
@@ -23,7 +16,7 @@ export function Header({
   fetching,
   onAddRepo,
 }: Props) {
-  const { theme, toggleTheme, lastRefresh } = useAppStore();
+  const { lastRefresh } = useAppStore();
 
   return (
     <header>
@@ -61,9 +54,6 @@ export function Header({
         </button>
         <button className="btn btn-primary" onClick={onAddRepo}>
           <Plus size={12} /> Add repo
-        </button>
-        <button className="btn-icon" onClick={toggleTheme} title="Toggle theme">
-          {theme === "mocha" ? <Sun size={15} /> : <Moon size={15} />}
         </button>
       </div>
     </header>
