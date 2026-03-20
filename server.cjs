@@ -92,8 +92,10 @@ async function getRepoStatus(repoPath) {
         }
       : null;
 
-    const changed = status.files.length;
     const staged = status.staged.length;
+    const changed = status.files.filter(
+      (f) => f.working_dir !== " " && f.working_dir !== ""
+    ).length;
 
     return {
       name: path.basename(repoPath),
@@ -105,7 +107,7 @@ async function getRepoStatus(repoPath) {
       behind,
       changed,
       staged,
-      isClean: changed === 0,
+      isClean: changed === 0 && staged === 0,
       lastCommit,
       files: status.files.map((f) => ({
         path: f.path,

@@ -221,6 +221,10 @@ header {
     background: color-mix(in srgb, var(--green) 20%, transparent);
     color: var(--green);
 }
+.badge-staged {
+    background: color-mix(in srgb, var(--green) 20%, transparent);
+    color: var(--green);
+}
 .badge-changed {
     background: color-mix(in srgb, var(--yellow) 20%, transparent);
     color: var(--yellow);

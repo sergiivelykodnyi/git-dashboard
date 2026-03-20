@@ -55,6 +55,9 @@ export function RepoRow({ repo }: Props) {
         {repo.changed > 0 && (
           <span className="badge badge-changed">{repo.changed} changed</span>
         )}
+        {repo.staged > 0 && (
+          <span className="badge badge-staged">{repo.staged} staged</span>
+        )}
         {repo.ahead > 0 && (
           <span className="badge badge-ahead">↑{repo.ahead}</span>
         )}
