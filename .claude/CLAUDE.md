@@ -31,7 +31,7 @@ Frontend (Vite/React)  :5173  →  Backend (Express)  :3000  →  local git repo
 | Layer      | Path                 | Purpose                                                                        |
 | ---------- | -------------------- | ------------------------------------------------------------------------------ |
 | Entry      | `src/main.tsx`       | Mounts React, imports styles                                                   |
-| Root       | `src/App.tsx`        | Layout, modal state, top-level routing between empty state and RepoDetail      |
+| Root       | `src/App.tsx`        | Layout, modal state, renders repo list (RepoRow × n) or empty state            |
 | Types      | `src/types/index.ts` | All shared TypeScript interfaces (single source of truth)                      |
 | API        | `src/api/index.ts`   | Axios wrapper — all HTTP calls to the backend                                  |
 | Store      | `src/store/index.ts` | Zustand global state (repos, activeRepoPath, logs, theme)                      |
@@ -133,15 +133,17 @@ Config is persisted to `config.json` in the project root.
 ```
 App.tsx
 ├── Header.tsx              — logo, refresh button, Add repo, theme toggle
-├── Sidebar.tsx             — repo list container, refresh icon
-│   └── RepoItem.tsx        — single row: icon, name, branch, badges (✓ / changed / ↑ahead / ↓behind)
-├── RepoDetail.tsx          — main panel when a repo is selected
-│   ├── StatsGrid.tsx       — 4-cell grid: clean / changed / ahead / behind
-│   ├── FileList.tsx        — changed files with M/A/D/R status badges
-│   ├── CommitForm.tsx      — text input + Commit button (stages all + commits)
-│   └── LogOutput.tsx       — scrolling log of all git operation output
+├── RepoRow.tsx             — one card per repo: icon, name, branch pill, status badges, action buttons
+├── LogOutput.tsx           — scrolling log of all git operation output (rendered below the repo list)
 ├── AddRepoModal.tsx        — modal: single path input OR scan-directory input
 └── Toast.tsx               — imperative toast system (call toast(msg, type) from anywhere)
+
+Unused (TODO: remove in the future):
+├── Sidebar.tsx             — old sidebar container
+├── RepoItem.tsx            — old sidebar row
+├── RepoDetail.tsx          — old detail panel
+├── StatsGrid.tsx           — old 4-cell status grid
+└── CommitForm.tsx          — old commit input + button
 ```
 
 ---

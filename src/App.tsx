@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { BookMarked } from "lucide-react";
 import { Header } from "./components/Header";
-import { Sidebar } from "./components/Sidebar";
-import { RepoDetail } from "./components/RepoDetail";
+import { RepoRow } from "./components/RepoRow";
+import { LogOutput } from "./components/LogOutput";
 import { AddRepoModal } from "./components/AddRepoModal";
 import { ToastContainer } from "./components/Toast";
 import { useRepos } from "./hooks/useRepos";
@@ -14,9 +14,7 @@ function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
   const { refresh } = useRepos();
-  const { repos, activeRepoPath, setRepos } = useAppStore();
-
-  const activeRepo = repos.find((r) => r.path === activeRepoPath) ?? null;
+  const { repos, setRepos } = useAppStore();
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -43,32 +41,25 @@ function App() {
         fetching={fetching}
         onAddRepo={() => setShowModal(true)}
       />
-      <div className="layout">
-        <Sidebar />
-        <main className="main">
-          {activeRepo ? (
-            <RepoDetail repo={activeRepo} />
-          ) : (
-            <div className="empty-state">
-              <BookMarked
-                size={56}
-                strokeWidth={1.2}
-                style={{ opacity: 0.25 }}
-              />
-              <h3>No repository selected</h3>
-              <p>
-                Select a repository from the sidebar, or add one to get started.
-              </p>
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowModal(true)}
-              >
-                Add repository
-              </button>
-            </div>
-          )}
-        </main>
-      </div>
+      <main className="main">
+        {repos.length === 0 ? (
+          <div className="empty-state">
+            <BookMarked size={56} strokeWidth={1.2} style={{ opacity: 0.25 }} />
+            <h3>No repositories yet</h3>
+            <p>Add a repository to get started.</p>
+            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+              Add repository
+            </button>
+          </div>
+        ) : (
+          <div className="repo-list">
+            {repos.map((r) => (
+              <RepoRow key={r.path} repo={r} />
+            ))}
+            <LogOutput />
+          </div>
+        )}
+      </main>
 
       {showModal && (
         <AddRepoModal

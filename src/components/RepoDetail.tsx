@@ -1,3 +1,4 @@
+// TODO: This component is not used anymore and can be removed in the future.
 import { Download, Upload, RefreshCw, Trash2, GitBranch, BookMarked } from 'lucide-react';
 import { useAppStore } from '../store';
 import { removeRepo as apiRemoveRepo } from '../api';

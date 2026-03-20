@@ -1,3 +1,4 @@
+// TODO: This component is not used anymore and can be removed in the future.
 import { useState } from 'react';
 import { GitCommitHorizontal } from 'lucide-react';
 import { useGitAction } from '../hooks/useGitAction';

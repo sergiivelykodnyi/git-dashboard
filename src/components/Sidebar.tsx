@@ -1,3 +1,4 @@
+// TODO: This component is not used anymore and can be removed in the future.
 import { useAppStore } from "../store";
 import { RepoItem } from "./RepoItem";
 

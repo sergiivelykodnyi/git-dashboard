@@ -5,13 +5,9 @@ Built with **Vite + React + TypeScript**. Styled with **Catppuccin** — Mocha (
 
 ## Features
 
-- 📋 Sidebar list of all repos with live status badges
-- 🌿 Current branch + remote tracking info
-- ↑↓ Ahead / behind remote indicators
-- 📄 Changed files list with status (M / A / D / R)
-- 📦 Last commit info (hash, message, author, date)
+- 📋 Full-width list of all repos — each row shows name, branch, and live status badges
+- 🌿 Current branch + ahead / behind remote indicators per row
 - ⚡ **Fetch all** repos at once from the header, or **Fetch**, **Pull**, **Push** per repo with one click
-- ✏️ **Commit** changes with a message (stages everything + commits)
 - 🔄 Auto-refresh every 30 seconds
 - 🌙 Mocha (dark) / ☀️ Latte (light) theme toggle, persisted in localStorage
 
@@ -66,12 +62,7 @@ All git repositories inside will be auto-discovered.
 │   ├── types/index.ts      # Shared TypeScript types
 │   ├── components/
 │   │   ├── Header.tsx
-│   │   ├── Sidebar.tsx
-│   │   ├── RepoItem.tsx
-│   │   ├── RepoDetail.tsx
-│   │   ├── StatsGrid.tsx
-│   │   ├── FileList.tsx
-│   │   ├── CommitForm.tsx
+│   │   ├── RepoRow.tsx
 │   │   ├── LogOutput.tsx
 │   │   ├── AddRepoModal.tsx
 │   │   └── Toast.tsx
