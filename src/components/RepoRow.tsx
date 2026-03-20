@@ -64,6 +64,9 @@ export function RepoRow({ repo }: Props) {
         {repo.behind > 0 && (
           <span className="badge badge-behind">↓{repo.behind}</span>
         )}
+        {repo.stash > 0 && (
+          <span className="badge badge-stash">{repo.stash} stashed</span>
+        )}
       </div>
 
       <div className="repo-row-actions">

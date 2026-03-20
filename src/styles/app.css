@@ -237,6 +237,10 @@ header {
     background: color-mix(in srgb, var(--peach) 20%, transparent);
     color: var(--peach);
 }
+.badge-stash {
+    background: color-mix(in srgb, var(--teal) 20%, transparent);
+    color: var(--teal);
+}
 .badge-error {
     background: color-mix(in srgb, var(--red) 20%, transparent);
     color: var(--red);

@@ -21,6 +21,7 @@ export interface Repo {
   behind: number;
   changed: number;
   staged: number;
+  stash: number;
   isClean: boolean;
   lastCommit: LastCommit | null;
   files: GitFile[];

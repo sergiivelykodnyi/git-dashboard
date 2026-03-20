@@ -69,10 +69,11 @@ function scanDirectory(dir) {
 async function getRepoStatus(repoPath) {
   try {
     const git = simpleGit(repoPath);
-    const [status, log, remotes] = await Promise.all([
+    const [status, log, remotes, stashList] = await Promise.all([
       git.status(),
       git.log({ maxCount: 1 }).catch(() => ({ latest: null })),
       git.getRemotes(true).catch(() => []),
+      git.stashList().catch(() => ({ all: [] })),
     ]);
 
     const hasRemote = remotes.length > 0;
@@ -96,6 +97,7 @@ async function getRepoStatus(repoPath) {
     const changed = status.files.filter(
       (f) => f.working_dir !== " " && f.working_dir !== ""
     ).length;
+    const stash = stashList.all.length;
 
     return {
       name: path.basename(repoPath),
@@ -107,6 +109,7 @@ async function getRepoStatus(repoPath) {
       behind,
       changed,
       staged,
+      stash,
       isClean: changed === 0 && staged === 0,
       lastCommit,
       files: status.files.map((f) => ({
@@ -124,6 +127,7 @@ async function getRepoStatus(repoPath) {
       isClean: null,
       changed: 0,
       staged: 0,
+      stash: 0,
       ahead: 0,
       behind: 0,
       hasRemote: false,
