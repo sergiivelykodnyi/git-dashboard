@@ -14,19 +14,23 @@ function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
   const { refresh } = useRepos();
-  const { repos, setRepos } = useAppStore();
+  const { repos, setRepos, addLog } = useAppStore();
 
   const handleRefresh = async () => {
     setRefreshing(true);
+    addLog('Running refresh all…', 'info');
     await refresh();
+    addLog('Refreshed all repositories', 'ok');
     setRefreshing(false);
   };
 
   const handleFetchAll = async () => {
     setFetching(true);
+    addLog('Running fetch all…', 'info');
     try {
       const updated = await fetchAllRepos();
       setRepos(updated);
+      addLog('Fetched all repositories', 'ok');
     } finally {
       setFetching(false);
     }
