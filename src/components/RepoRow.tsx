@@ -1,6 +1,6 @@
 import {
-  Download,
-  Upload,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   Trash2,
   GitBranch,
   BookMarked,
@@ -90,7 +90,7 @@ export function RepoRow({ repo }: Props) {
           {loading === "pull" ? (
             <span className="spinner" />
           ) : (
-            <Download size={12} />
+            <ArrowDownToLine size={12} />
           )}{" "}
           Pull
         </button>
@@ -102,7 +102,7 @@ export function RepoRow({ repo }: Props) {
           {loading === "push" ? (
             <span className="spinner" />
           ) : (
-            <Upload size={12} />
+            <ArrowUpFromLine size={12} />
           )}{" "}
           Push
         </button>
