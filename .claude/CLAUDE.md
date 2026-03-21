@@ -137,13 +137,6 @@ App.tsx
 ├── LogOutput.tsx           — scrolling log of all git operation output (rendered below the repo list)
 ├── AddRepoModal.tsx        — modal: single path input OR scan-directory input
 └── Toast.tsx               — imperative toast system (call toast(msg, type) from anywhere)
-
-Unused (TODO: remove in the future):
-├── Sidebar.tsx             — old sidebar container
-├── RepoItem.tsx            — old sidebar row
-├── RepoDetail.tsx          — old detail panel
-├── StatsGrid.tsx           — old 4-cell status grid
-└── CommitForm.tsx          — old commit input + button
 ```
 
 ---
