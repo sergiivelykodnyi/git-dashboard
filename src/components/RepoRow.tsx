@@ -9,7 +9,7 @@ import {
 import { useAppStore } from "../store";
 import { removeRepo as apiRemoveRepo } from "../api";
 import { useGitAction } from "../hooks/useGitAction";
-import { toast } from "./Toast";
+import { toast } from "../utils/toast";
 import type { Repo } from "../types";
 
 interface Props {

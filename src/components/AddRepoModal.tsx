@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { addRepo, getConfig, saveConfig } from '../api';
-import { toast } from './Toast';
+import { toast } from '../utils/toast';
 
 interface Props {
   onClose: () => void;

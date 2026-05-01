@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { setToastHandler } from '../utils/toast';
 
 interface ToastItem {
   id: number;
@@ -8,22 +9,17 @@ interface ToastItem {
 }
 
 let toastId = 0;
-let externalAdd: ((msg: string, type: 'ok' | 'err') => void) | null = null;
-
-export function toast(msg: string, type: 'ok' | 'err' = 'ok') {
-  externalAdd?.(msg, type);
-}
 
 export function ToastContainer() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   useEffect(() => {
-    externalAdd = (msg, type) => {
+    setToastHandler((msg, type) => {
       const id = toastId++;
       setToasts((p) => [...p, { id, msg, type }]);
       setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 4000);
-    };
-    return () => { externalAdd = null; };
+    });
+    return () => { setToastHandler(null); };
   }, []);
 
   return (
