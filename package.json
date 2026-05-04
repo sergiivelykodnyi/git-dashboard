@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node server.cjs",
+    "server": "node server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "update": "npx npm-check-updates --format group",
     "upgrade": "npx npm-check-updates --interactive --format group"

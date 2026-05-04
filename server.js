@@ -1,8 +1,12 @@
-const express = require("express");
-const { simpleGit } = require("simple-git");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import { simpleGit } from "simple-git";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors({ origin: /^http:\/\/localhost(:\d+)?$/ }));
@@ -86,11 +90,11 @@ async function getRepoStatus(repoPath) {
 
     const lastCommit = log.latest
       ? {
-          hash: log.latest.hash.substring(0, 7),
-          message: log.latest.message,
-          author: log.latest.author_name,
-          date: log.latest.date,
-        }
+        hash: log.latest.hash.substring(0, 7),
+        message: log.latest.message,
+        author: log.latest.author_name,
+        date: log.latest.date,
+      }
       : null;
 
     const staged = status.staged.length;
